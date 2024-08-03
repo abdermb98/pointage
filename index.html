@@ -125,11 +125,28 @@
         grid-template-columns: 1fr;
       }
     }
+    .navigate-button {
+      display: inline-block;
+      padding: 10px 20px;
+      margin: 20px 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+      background-color: #1e3a8a;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .navigate-button:hover {
+      background-color: #2b4a8f;
+    }
   </style>
 </head>
 <body>
   <header>
     Filtered Table
+    <button class="navigate-button" onclick="navigateToPage()">BACK</button>
   </header>
   <div id="dataSummary">
     <!-- Summary results will be displayed here -->
@@ -149,6 +166,9 @@
   </table>
 
   <script>
+    function navigateToPage() {
+      window.location.href = 'https://abdermb98.github.io/finca20/https://www.example.com'; // استبدل هذا بالرابط الخاص بك
+    }
     const url = 'https://script.googleusercontent.com/macros/echo?user_content_key=ClhgNhCQothAFB4GVv2iqgnNfXCY31xeoFd0ohwV4NnIZbK7doPWzZgGtNsuhfzD-p1FMfcSJgpQ2U-DDANR6l2rBZKeQsEem5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnO2BjWnUfMfGKSt2yZKsGJW7Tqo9TO9eCvuLZWP3kjCPWyBEA13tgSWaZYEpm9Ha4lhZ20knnoR-uszEfYDZk4qeg_faERGp3g&lib=MSzpXGYYaFod3X2bFPpbiAN3xLYHdXm_G';
 
     let headers = [];
