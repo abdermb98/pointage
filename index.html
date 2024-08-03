@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Filtered Table</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #f5f7fa;
+    }
+    header {
+      width: 100%;
+      background-color: #1e3a8a;
+      color: #fff;
+      padding: 15px 0;
+      text-align: center;
+      font-size: 28px;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+    #rowCount {
+      margin: 20px 0;
+      font-size: 20px;
+      font-weight: 600;
+      color: #333;
+    }
+    table {
+      width: 100%;
+      max-width: 1200px;
+      border-collapse: collapse;
+      margin: 30px 0;
+      background-color: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #e1e5e8;
+      text-align: center;
+    }
+    th {
+      background-color: #1e3a8a;
+      color: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    th:hover {
+      background-color: #2b4a8f;
+    }
+    td {
+      background-color: #f9f9f9;
+    }
+    td:hover {
+      background-color: #f1f3f4;
+    }
+    .filter-input {
+      width: calc(100% - 16px);
+      padding: 8px;
+      box-sizing: border-box;
+      margin: 6px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      transition: border-color 0.3s ease;
+    }
+    .filter-input:focus {
+      border-color: #1e3a8a;
+      outline: none;
+    }
+    .filter-row {
+      background-color: #f3f4f6;
+    }
+    #dataSummary {
+      width: 90%;
+      max-width: 1200px;
+      text-align: center;
+      margin: 30px 0;
+      font-size: 18px;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+    }
+    .summary-item {
+      padding: 15px;
+      border-radius: 6px;
+      background-color: #e0f4ff;
+      border-left: 6px solid #1e3a8a;
+      font-weight: 600;
+      text-align: left;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .summary-item:nth-child(odd) {
+      background-color: #d6e9f8;
+    }
+    .summary-item span {
+      color: #333;
+    }
+    .negative {
+      color: #d9534f;
+    }
+    @media (max-width: 768px) {
+      table {
+        width: 100%;
+        display: block;
+        overflow-x: auto;
+      }
+      th, td {
+        padding: 10px;
+        white-space: nowrap;
+      }
+      #dataSummary {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    Filtered Table
+  </header>
+  <div id="dataSummary">
+    <!-- Summary results will be displayed here -->
+  </div>
+  <table id="dataTable">
+    <thead>
+      <tr id="headerRow">
+        <!-- Column headers will be added here -->
+      </tr>
+      <tr id="filterRow" class="filter-row">
+        <!-- Column filters will be added here -->
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Data rows will be added here -->
+    </tbody>
+  </table>
+
+  <script>
+    const url = 'https://script.googleusercontent.com/macros/echo?user_content_key=ClhgNhCQothAFB4GVv2iqgnNfXCY31xeoFd0ohwV4NnIZbK7doPWzZgGtNsuhfzD-p1FMfcSJgpQ2U-DDANR6l2rBZKeQsEem5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnO2BjWnUfMfGKSt2yZKsGJW7Tqo9TO9eCvuLZWP3kjCPWyBEA13tgSWaZYEpm9Ha4lhZ20knnoR-uszEfYDZk4qeg_faERGp3g&lib=MSzpXGYYaFod3X2bFPpbiAN3xLYHdXm_G';
+
+    let headers = [];
+    let rows = [];
+
+    async function fetchData() {
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        console.log('Data fetched:', data);
+
+        headers = Object.keys(data.rows[0]);
+        rows = data.rows;
+
+        populateTableHeaders();
+        updateTableAndSummary();
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
+
+    function populateTableHeaders() {
+      const headerRow = document.querySelector('#headerRow');
+      const filterRow = document.querySelector('#filterRow');
+
+      headers.forEach(header => {
+        const th = document.createElement('th');
+        th.textContent = header;
+        headerRow.appendChild(th);
+
+        const filterInput = document.createElement('input');
+        filterInput.className = 'filter-input';
+        filterInput.placeholder = `Filter ${header}`;
+        filterInput.addEventListener('input', updateTableAndSummary);
+        const filterTh = document.createElement('th');
+        filterTh.appendChild(filterInput);
+        filterRow.appendChild(filterTh);
+      });
+    }
+
+    function updateTableAndSummary() {
+      const tableBody = document.querySelector('#dataTable tbody');
+      tableBody.innerHTML = '';
+      const filterInputs = document.querySelectorAll('#filterRow .filter-input');
+      
+      let totalFourthColumn = 0;
+      let totalFifthColumn = 0;
+      let rowCount = 0;
+
+      rows.forEach(row => {
+        let shouldDisplay = true;
+
+        filterInputs.forEach((input, index) => {
+          const filterValue = input.value.toLowerCase();
+          if (filterValue && !String(row[headers[index]]).toLowerCase().includes(filterValue)) {
+            shouldDisplay = false;
+          }
+        });
+
+        if (shouldDisplay) {
+          const tr = document.createElement('tr');
+          headers.forEach((header, index) => {
+            const td = document.createElement('td');
+            td.textContent = row[header] || '';
+            tr.appendChild(td);
+
+            if (index === 3 && !isNaN(row[header])) totalFourthColumn += parseFloat(row[header]);
+            if (index === 4 && !isNaN(row[header])) totalFifthColumn += parseFloat(row[header]);
+          });
+          tableBody.appendChild(tr);
+          rowCount++;
+        }
+      });
+
+      const difference = totalFifthColumn - totalFourthColumn;
+      const percentageDifference = (totalFourthColumn !== 0) ? ((difference / totalFourthColumn) * 100).toFixed(2) : 0;
+
+      const summaryDiv = document.getElementById('dataSummary');
+      summaryDiv.innerHTML = `
+        <div class="summary-item">
+          <h3>Total Rows: <span>${rowCount}</span></h3>
+        
+      `;
+    }
+
+    fetchData();
+  </script>
+</body>
+</html>
