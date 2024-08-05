@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pointeuse</title>
+  <title>Filtered Table</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -14,12 +14,13 @@
       align-items: center;
       background-color: #f5f7fa;
     }
-    
+
     #rowCount {
       margin: 0px 0;
-      font-size: 20px;
+      font-size: 60px;
       font-weight: 600;
       color: #333;
+      text-align: center;
     }
     table {
       width: 100%;
@@ -69,36 +70,35 @@
       background-color: #f3f4f6;
     }
     #dataSummary {
-      width: 90%;
+      width: 80%;
       max-width: 1200px;
       text-align: center;
       margin: 3px 0;
-      font-size: 18px;
+      font-size: 20px;
       background-color: #ffffff;
-      padding: 20px;
-      border-radius: 8px;
+      border-radius: 60px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 10px;
-      animation: summaryPulse 5s ease-in-out infinite;
+      animation: summaryPulse 15s ease-in-out infinite;
     }
     @keyframes summaryPulse {
-    0% { transform: scale(1); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); }
-    50% { transform: scale(1.05); box-shadow: 0 20px 40px rgba(0, 255, 255, 0.3); }
-    100% { transform: scale(1); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); }
+      0% { transform: scale(1); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); }
+      50% { transform: scale(1.05); box-shadow: 0 20px 40px rgba(0, 255, 255, 0.3); }
+      100% { transform: scale(1); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); }
     }
 
     .element {
-     animation: pulseRotate 5s ease-in-out infinite;
-     }
+      animation: pulseRotate 5s ease-in-out infinite;
+    }
     .summary-item {
-      padding: 15px;
-      border-radius: 6px;
-      background-color: #e0f4ff;
-      border-left: 14px solid #004d40;
+      padding: 10px;
+      border-radius: 60px;
+      background-color: #ffffff;
+      border: 2px solid #004d40;
       font-weight: 600;
-      text-align: left;
+      text-align: center;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
     .summary-item:nth-child(odd) {
@@ -124,14 +124,17 @@
         grid-template-columns: 1fr;
       }
     }
+    .navigate-button {
+      align-items: right;
+    }
     button {
-            padding: 10px 20px;
-            background-color: #1e3a8a;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-        }
+      padding: 10px 20px;
+      background-color: #1e3a8a;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
     .navigate-button:hover {
       background-color: #004d40;
     }
@@ -139,10 +142,10 @@
 </head>
 <body>
   <header>
-<div class="button-container">
- </h3><button class="navigate-button" onclick="navigateToPage()">BACK</button></h3>
-  </div>
-    </header>
+    <div class="button-container">
+      <h3><button class="navigate-button" onclick="navigateToPage()">BACK</button></h3>
+    </div>
+  </header>
   <div id="dataSummary">
     <!-- Summary results will be displayed here -->
   </div>
@@ -204,11 +207,19 @@
       });
     }
 
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0'); // الأشهر من 0 إلى 11
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    }
+
     function updateTableAndSummary() {
       const tableBody = document.querySelector('#dataTable tbody');
       tableBody.innerHTML = '';
       const filterInputs = document.querySelectorAll('#filterRow .filter-input');
-      
+
       let totalFourthColumn = 0;
       let totalFifthColumn = 0;
       let rowCount = 0;
@@ -227,7 +238,11 @@
           const tr = document.createElement('tr');
           headers.forEach((header, index) => {
             const td = document.createElement('td');
-            td.textContent = row[header] || '';
+            if (index === 3) {
+              td.textContent = row[header] ? formatDate(row[header]) : ' ';
+            } else {
+              td.textContent = row[header] ? row[header] : ' ';
+            }
             tr.appendChild(td);
 
             if (index === 3 && !isNaN(row[header])) totalFourthColumn += parseFloat(row[header]);
@@ -245,7 +260,6 @@
       summaryDiv.innerHTML = `
         <div class="summary-item">
           <h3>Total prs : <span>${rowCount}</span></h3>
-        
       `;
     }
 
