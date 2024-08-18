@@ -128,30 +128,10 @@
         grid-template-columns: 1fr;
       }
     }
-    .navigate-button {
-      align-items: right;
-    }
-    button {
-      padding: 10px 20px;
-      background-color: #1e3a8a;
-      color: white;
-      border: none;
-      cursor: pointer;
-      border-radius: 20px;
-      width:200px;
-      
-    }
-    .navigate-button:hover {
-      background-color: #004d40;
-    }
+    
   </style>
 </head>
 <body>
-  <header>
-    <div class="button-container">
-      <h3><button class="navigate-button" onclick="navigateToPage()">BACK</button></h3>
-    </div>
-  </header>
   <div id="dataSummary">
     <!-- Summary results will be displayed here -->
   </div>
@@ -170,9 +150,6 @@
   </table>
 
   <script>
-    function navigateToPage() {
-      window.location.href = 'https://aromaherbex.github.io/LUNDI/'; // استبدل هذا بالرابط الخاص بك
-    }
     const url = 'https://script.googleusercontent.com/macros/echo?user_content_key=ClhgNhCQothAFB4GVv2iqgnNfXCY31xeoFd0ohwV4NnIZbK7doPWzZgGtNsuhfzD-p1FMfcSJgpQ2U-DDANR6l2rBZKeQsEem5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnO2BjWnUfMfGKSt2yZKsGJW7Tqo9TO9eCvuLZWP3kjCPWyBEA13tgSWaZYEpm9Ha4lhZ20knnoR-uszEfYDZk4qeg_faERGp3g&lib=MSzpXGYYaFod3X2bFPpbiAN3xLYHdXm_G';
 
     let headers = [];
